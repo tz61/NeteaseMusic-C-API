@@ -37,13 +37,14 @@ static size_t post_write_callback(void *contents, size_t size, size_t nmemb, voi
  * need to free cJSON parameter `paramJSON` manually after invokation of this function
  */
 // TODO to randomly pick user agent
-int NCM_request(const char *cookieJar, cJSON *paramJSON, const char *customCookies, const char *url, const char *szEapiURL,
+int NCM_request(const char *cookieJar, cJSON *paramJSON, cJSON *customCookies, const char *url, const char *szEapiURL,
 				char **outResponse, API_TYPE NCMAPIType) {
 
 	CURL *curlHandle;
 	CURLcode result;
 	RESPONSE response = {.responseBuffer = malloc(0), .size = 0};
 	char *postFields;
+	char szCustomCookie[4000] = {0};
 
 	// Set relevant headers
 
@@ -83,9 +84,20 @@ int NCM_request(const char *cookieJar, cJSON *paramJSON, const char *customCooki
 		// check existing cookies to find csrf_token and then add it into data param
 		// force a reload for checking
 		curl_easy_setopt(curlHandle, CURLOPT_COOKIELIST, "RELOAD");
+
 		// Add custom cookies
+		cJSON *_tmp;
 		if (customCookies) {
-			curl_easy_setopt(curlHandle, CURLOPT_COOKIELIST, customCookies);
+			_tmp = customCookies->child;
+			while (_tmp) {
+				if (_tmp->type == cJSON_String) {
+					char szTmp[1000];
+					// MUSIC_A/U and csrf_token is ultra long!
+					sprintf_s(szTmp, 1000, "%s=%s; ", _tmp->string, _tmp->valuestring);
+					strcat_s(szCustomCookie, 2000, szTmp);
+				}
+				_tmp = _tmp->next;
+			}
 		}
 
 		struct curl_slist *existingCookies;
@@ -96,7 +108,9 @@ int NCM_request(const char *cookieJar, cJSON *paramJSON, const char *customCooki
 		while (each) {
 			char *tmpLocation;
 			if ((tmpLocation = strstr(each->data, "__csrf"))) {
+#if REQUEST_DEBUG
 				printf("__csrf=%s\n", tmpLocation + 7); // csrf_token\t
+#endif
 				strcpy_s(szSavedCsrfToken, 100, tmpLocation + 11);
 				csrfTokenFlag = 1;
 			}
@@ -105,8 +119,9 @@ int NCM_request(const char *cookieJar, cJSON *paramJSON, const char *customCooki
 				bMUSIC_A = 1;
 			}
 			if ((tmpLocation = strstr(each->data, "MUSIC_U"))) {
-
+#if REQUEST_DEBUG
 				printf("MUSIC_U=%s\n", tmpLocation + 8); // MUSIC_U\t
+#endif
 				strcpy_s(szSavedMUSIC_U, 2000, tmpLocation + 8);
 				bMUSIC_U = 1;
 			}
@@ -149,7 +164,9 @@ int NCM_request(const char *cookieJar, cJSON *paramJSON, const char *customCooki
 			size_t nbase64size;
 			char *pszBase64Str =
 				base64((unsigned char *)"869687054311451\t02:00:00:00:00:00\t5106025eb79a5247\t70ffbaac7", 60, &nbase64size);
-			// cJSON_AddStringToObject(eapiCustomCookie, "deviceId", pszBase64Str);
+			cJSON_AddStringToObject(eapiCustomCookie, "deviceId", pszBase64Str);
+
+			free(pszBase64Str);
 			//  deviceId: cookie.deviceId, //encrypt.base64.encode(imei + '\t02:00:00:00:00:00\t5106025eb79a5247\t70ffbaac7')
 			cJSON_AddStringToObject(eapiCustomCookie, "appver", "8.9.70");
 			// appver: cookie.appver || '8.9.70', // app版本
@@ -194,25 +211,22 @@ int NCM_request(const char *cookieJar, cJSON *paramJSON, const char *customCooki
 			}
 			// Then copy the header to real headers
 			cJSON *tmp = eapiCustomCookie->child;
-			char szCustomCookie[2000] = {0};
 			while (tmp) {
 				if (tmp->type == cJSON_String) {
 					char szTmp[1000];
 					// MUSIC_A/U and csrf_token is ultra long!
 					sprintf_s(szTmp, 1000, "%s=%s; ", tmp->string, tmp->valuestring);
 					strcat_s(szCustomCookie, 2000, szTmp);
-					tmp = tmp->next;
 				}
+				tmp = tmp->next;
 			}
-#if REQUEST_DEBUG
-			printf("Overall Added cookie:\n%s\n", szCustomCookie);
-#endif
-
-			curl_easy_setopt(curlHandle, CURLOPT_COOKIE, szCustomCookie);
 
 			break;
 		}
-
+#if REQUEST_DEBUG
+		printf("Overall Added cookie:\n%s\n", szCustomCookie);
+#endif
+		curl_easy_setopt(curlHandle, CURLOPT_COOKIE, szCustomCookie);
 		// set request header
 		curl_easy_setopt(curlHandle, CURLOPT_HTTPHEADER, headerList);
 

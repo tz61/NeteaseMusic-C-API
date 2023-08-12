@@ -100,7 +100,10 @@ int main(void) {
 	// printf("Response5:\n%s\n", response);
 	// free(response);
 #else
-	logout(cookieJar, &response);
+	// personalized_newsong(cookieJar, &response);
+	// like 22686719
+	playlist_create(cookieJar, "Touhou Gameset", 1, NCM_PLAYLIST_NORMAL, &response);
+	//like(cookieJar, "22686719", 1, &response);
 	printf("Response5:\n%s\n", response);
 	free(response);
 #endif

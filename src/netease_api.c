@@ -1,4 +1,5 @@
 #include <cJSON.h>
+#include <netease_api.h>
 #include <request.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -95,5 +96,80 @@ int logout(const char *cookieJar, char **response) {
 	cJSON *jsonObject = cJSON_CreateObject();
 	int code = NCM_request(cookieJar, jsonObject, 0, "https://music.163.com/weapi/logout", 0, response, NCM_WEAPI);
 	cJSON_Delete(jsonObject);
+	return code;
+}
+int login_refresh(const char *cookieJar, char **response) {
+	cJSON *jsonObject = cJSON_CreateObject();
+	int code = NCM_request(cookieJar, jsonObject, 0, "https://music.163.com/weapi/login/token/refresh", 0, response, NCM_WEAPI);
+	cJSON_Delete(jsonObject);
+	return code;
+}
+int personalized(const char *cookieJar, char **response) {
+	cJSON *jsonObject = cJSON_CreateObject();
+
+	cJSON_AddNumberToObject(jsonObject, "limit", 30);
+	cJSON_AddNumberToObject(jsonObject, "n", 1000);
+	cJSON_AddBoolToObject(jsonObject, "total", 1);
+	int code = NCM_request(cookieJar, jsonObject, 0, "https://music.163.com/weapi/personalized/playlist", 0, response, NCM_WEAPI);
+	cJSON_Delete(jsonObject);
+	return code;
+}
+int personalized_newsong(const char *cookieJar, char **response) {
+	cJSON *customCookie = cJSON_CreateObject();
+	cJSON_AddStringToObject(customCookie, "os", "pc");
+
+	cJSON *jsonObject = cJSON_CreateObject();
+	cJSON_AddNumberToObject(jsonObject, "areaId", 0);
+	cJSON_AddNumberToObject(jsonObject, "limit", 10);
+	cJSON_AddStringToObject(jsonObject, "type", "recommend");
+	int code = NCM_request(cookieJar, jsonObject, customCookie, "https://music.163.com/weapi/personalized/playlist", 0, response,
+						   NCM_WEAPI);
+	cJSON_Delete(jsonObject);
+	cJSON_Delete(customCookie);
+	return code;
+}
+int like(const char *cookieJar, const char *trackId,int isLiked, char **response) {
+	cJSON *customCookie = cJSON_CreateObject();
+	cJSON_AddStringToObject(customCookie, "os", "pc");
+
+	cJSON_AddStringToObject(customCookie, "appver", "2.9.7");
+
+	cJSON *jsonObject = cJSON_CreateObject();
+	cJSON_AddStringToObject(jsonObject, "alg", "itembased");
+	cJSON_AddStringToObject(jsonObject, "trackId", trackId);
+	cJSON_AddBoolToObject(jsonObject, "like", isLiked);
+	cJSON_AddStringToObject(jsonObject, "time", "3");
+
+	int code = NCM_request(cookieJar, jsonObject, customCookie, "https://music.163.com/weapi/radio/like", 0, response,
+						   NCM_WEAPI);
+	cJSON_Delete(jsonObject);
+	cJSON_Delete(customCookie);
+	return code;
+}
+int playlist_create(const char *cookieJar, const char *name, int isPrivacy, PLAYLIST_TYPE playlistType, char **response) {
+	cJSON *jsonObject = cJSON_CreateObject();
+	cJSON *customCookie = cJSON_CreateObject();
+	cJSON_AddStringToObject(customCookie, "os", "pc");
+	cJSON_AddStringToObject(jsonObject, "name", name);
+	if (isPrivacy) {
+		cJSON_AddStringToObject(jsonObject, "privacy", "10");
+	} else {
+		cJSON_AddStringToObject(jsonObject, "privacy", "0");
+	}
+	switch (playlistType) {
+	case NCM_PLAYLIST_NORMAL:
+		cJSON_AddStringToObject(jsonObject, "type", "NORMAL");
+		break;
+	case NCM_PLAYLIST_VIDEO:
+		cJSON_AddStringToObject(jsonObject, "type", "VIDEO");
+		break;
+	case NCM_PLAYLIST_SHARED:
+		cJSON_AddStringToObject(jsonObject, "type", "SHARED");
+		break;
+	}
+	int code =
+		NCM_request(cookieJar, jsonObject, customCookie, "https://music.163.com/weapi/playlist/create", 0, response, NCM_WEAPI);
+	cJSON_Delete(jsonObject);
+	cJSON_Delete(customCookie);
 	return code;
 }

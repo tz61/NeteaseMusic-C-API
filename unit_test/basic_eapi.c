@@ -10,7 +10,7 @@ int main(void) {
 	curl_global_init(CURL_GLOBAL_ALL);
 
 	char *response;
-	user_followeds("cookies.txt", "582535183", 0, 30, "true", &response);
+	user_followeds("cookies.txt", "582535183", 0, 100, "true", &response);
 	printf("Response1:\n%s\n", response);
 	free(response);
 	curl_global_cleanup();
