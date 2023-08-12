@@ -102,8 +102,9 @@ int main(void) {
 #else
 	// personalized_newsong(cookieJar, &response);
 	// like 22686719
-	playlist_create(cookieJar, "Touhou Gameset", 1, NCM_PLAYLIST_NORMAL, &response);
+	//playlist_create(cookieJar, "Touhou Gameset", 1, NCM_PLAYLIST_NORMAL, &response);
 	//like(cookieJar, "22686719", 1, &response);
+	homepage_block_page(cookieJar, 1, 0, &response);
 	printf("Response5:\n%s\n", response);
 	free(response);
 #endif

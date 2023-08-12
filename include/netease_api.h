@@ -14,7 +14,8 @@ int playlist_create(const char *cookieJar, const char *name, int isPrivacy, PLAY
 int login_refresh(const char *cookieJar, char **response);
 int personalized(const char *cookieJar, char **response);
 int personalized_newsong(const char *cookieJar, char **response);
-int like(const char *cookieJar, const char *trackId,int isLiked, char **response);
+int like(const char *cookieJar, const char *trackId, int isLiked, char **response);
+int homepage_block_page(const char *cookieJar, int isRefresh, const char *cursor, char **response);
 #ifdef __cplusplus
 }
 #endif

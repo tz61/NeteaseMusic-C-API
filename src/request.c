@@ -68,9 +68,9 @@ int NCM_request(const char *cookieJar, cJSON *paramJSON, cJSON *customCookies, c
 		curl_easy_setopt(curlHandle, CURLOPT_HTTPPOST, 1);
 
 		// set ssl verify and certificates
-		curl_easy_setopt(curlHandle, CURLOPT_SSL_VERIFYSTATUS, 0);
-		curl_easy_setopt(curlHandle, CURLOPT_CAINFO, "cacert-2023-05-30.pem");
-		curl_easy_setopt(curlHandle, CURLOPT_CAPATH, "cacert-2023-05-30.pem");
+		curl_easy_setopt(curlHandle, CURLOPT_SSL_VERIFYPEER, 0);
+		//curl_easy_setopt(curlHandle, CURLOPT_CAINFO, "cacert-2023-05-30.pem");
+		//curl_easy_setopt(curlHandle, CURLOPT_CAPATH, "cacert-2023-05-30.pem");
 
 		// set write callback and response buffer to save to
 		curl_easy_setopt(curlHandle, CURLOPT_WRITEFUNCTION, post_write_callback);
