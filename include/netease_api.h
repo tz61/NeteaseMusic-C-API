@@ -16,6 +16,17 @@ int personalized(const char *cookieJar, char **response);
 int personalized_newsong(const char *cookieJar, char **response);
 int like(const char *cookieJar, const char *trackId, int isLiked, char **response);
 int homepage_block_page(const char *cookieJar, int isRefresh, const char *cursor, char **response);
+int user_account(const char *cookieJar, char **response);
+int user_level(const char *cookieJar, char **response);
+int user_binding(const char *cookieJar, const char *uid, char **response);
+int simi_user(const char *cookieJar, const char *songId, const char *limit, const char *offset, char **response);
+int recommend_resource(const char *cookieJar, char **response);
+int recommend_songs(const char *cookieJar, char **response);
+int history_recommend_songs(const char *cookieJar, char **response);
+int history_recommend_songs_detail(const char *cookieJar, const char *date, char **response);
+int vip_info(const char *cookieJar, char **response);
+int record_recent_song(const char *cookieJar, char **response);
+int song_url_v1(const char *cookieJar, const char *ids, const char *level, char **response);
 #ifdef __cplusplus
 }
 #endif

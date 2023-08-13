@@ -188,3 +188,120 @@ int playlist_create(const char *cookieJar, const char *name, int isPrivacy, PLAY
 	cJSON_Delete(customCookie);
 	return code;
 }
+int user_account(const char *cookieJar, char **response) {
+
+	cJSON *jsonObject = cJSON_CreateObject();
+	int code = NCM_request(cookieJar, jsonObject, 0, "https://music.163.com/weapi/nuser/account/get", 0, response, NCM_WEAPI);
+	cJSON_Delete(jsonObject);
+	return code;
+}
+int user_level(const char *cookieJar, char **response) {
+
+	cJSON *jsonObject = cJSON_CreateObject();
+	int code = NCM_request(cookieJar, jsonObject, 0, "https://music.163.com/weapi/user/level", 0, response, NCM_WEAPI);
+	cJSON_Delete(jsonObject);
+	return code;
+}
+int user_binding(const char *cookieJar, const char *uid, char **response) {
+
+	cJSON *jsonObject = cJSON_CreateObject();
+	char realURL[128];
+	memset(realURL, 0, 128);
+	strcat_s(realURL, 128, "https://music.163.com/weapi/v1/user/bindings/");
+	if (strlen(uid) > 127 - 43) {
+		printf("[user_binding]uid too long");
+		return -1;
+	}
+	strcat_s(realURL, 128, uid);
+	int code = NCM_request(cookieJar, jsonObject, 0, realURL, 0, response, NCM_WEAPI);
+	cJSON_Delete(jsonObject);
+	return code;
+}
+// seemingly not working
+int simi_user(const char *cookieJar, const char *songId, const char *limit, const char *offset, char **response) {
+
+	cJSON *jsonObject = cJSON_CreateObject();
+	cJSON_AddStringToObject(jsonObject, "songid", songId);
+	cJSON_AddStringToObject(jsonObject, "limit", limit);
+	cJSON_AddStringToObject(jsonObject, "offset", offset);
+	int code = NCM_request(cookieJar, jsonObject, 0, "https://music.163.com/weapi/discovery/simiUser", 0, response, NCM_WEAPI);
+	cJSON_Delete(jsonObject);
+	return code;
+}
+
+int recommend_resource(const char *cookieJar, char **response) {
+
+	cJSON *jsonObject = cJSON_CreateObject();
+	int code = NCM_request(cookieJar, jsonObject, 0, "https://music.163.com/weapi/v1/discovery/recommend/resource", 0, response,
+						   NCM_WEAPI);
+	cJSON_Delete(jsonObject);
+	return code;
+}
+int recommend_songs(const char *cookieJar, char **response) {
+
+	cJSON *jsonObject = cJSON_CreateObject();
+	cJSON *customCookie = cJSON_CreateObject();
+	cJSON_AddStringToObject(customCookie, "os", "ios");
+	int code = NCM_request(cookieJar, jsonObject, customCookie, "https://music.163.com/weapi/v3/discovery/recommend/songs", 0,
+						   response, NCM_WEAPI);
+	cJSON_Delete(jsonObject);
+	return code;
+}
+int history_recommend_songs(const char *cookieJar, char **response) {
+
+	cJSON *jsonObject = cJSON_CreateObject();
+	cJSON *customCookie = cJSON_CreateObject();
+	cJSON_AddStringToObject(customCookie, "os", "ios");
+	int code = NCM_request(cookieJar, jsonObject, customCookie,
+						   "https://music.163.com/weapi/discovery/recommend/songs/history/recent", 0, response, NCM_WEAPI);
+	cJSON_Delete(jsonObject);
+	return code;
+}
+int history_recommend_songs_detail(const char *cookieJar, const char *date, char **response) {
+
+	cJSON *jsonObject = cJSON_CreateObject();
+	cJSON *customCookie = cJSON_CreateObject();
+	cJSON_AddStringToObject(customCookie, "os", "ios");
+	if (date)
+		cJSON_AddStringToObject(jsonObject, "date", date);
+	else
+		cJSON_AddStringToObject(jsonObject, "date", "");
+	int code = NCM_request(cookieJar, jsonObject, customCookie,
+						   "https://music.163.com/weapi/discovery/recommend/songs/history/recent", 0, response, NCM_WEAPI);
+	cJSON_Delete(jsonObject);
+	return code;
+}
+int vip_info(const char *cookieJar, char **response) {
+
+	cJSON *jsonObject = cJSON_CreateObject();
+	int code = NCM_request(cookieJar, jsonObject, 0, "https://music.163.com/weapi/music-vip-membership/front/vip/info", 0,
+						   response, NCM_WEAPI);
+	cJSON_Delete(jsonObject);
+	return code;
+}
+int record_recent_song(const char *cookieJar, char **response) {
+
+	cJSON *jsonObject = cJSON_CreateObject();
+	int code = NCM_request(cookieJar, jsonObject, 0, "https://music.163.com/weapi/play-record/song/list", 0, response, NCM_WEAPI);
+	cJSON_Delete(jsonObject);
+	return code;
+}
+int song_url_v1(const char *cookieJar, const char *ids, const char *level, char **response) {
+
+	cJSON *jsonObject = cJSON_CreateObject();
+	cJSON *customCookie = cJSON_CreateObject();
+	cJSON_AddStringToObject(customCookie, "os", "android");
+	cJSON_AddStringToObject(customCookie, "appver", "8.10.05");
+	char realIDs[128] = {0};
+	sprintf_s(realIDs, 128, "[%s]", ids);
+	cJSON_AddStringToObject(jsonObject, "ids", realIDs);
+	cJSON_AddStringToObject(jsonObject, "level", level);
+	cJSON_AddStringToObject(jsonObject, "encodeType", "flac");
+	if (!strcmp(level, "sky"))
+		cJSON_AddStringToObject(jsonObject, "immerseType", "c51");
+	int code = NCM_request(cookieJar, jsonObject, customCookie, "https://interface.music.163.com/eapi/song/enhance/player/url/v1",
+						   "/api/song/enhance/player/url/v1", response, NCM_EAPI);
+	cJSON_Delete(jsonObject);
+	cJSON_Delete(customCookie);
+	return code;
+}

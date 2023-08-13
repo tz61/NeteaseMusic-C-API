@@ -102,9 +102,18 @@ int main(void) {
 #else
 	// personalized_newsong(cookieJar, &response);
 	// like 22686719
-	//playlist_create(cookieJar, "Touhou Gameset", 1, NCM_PLAYLIST_NORMAL, &response);
-	//like(cookieJar, "22686719", 1, &response);
-	homepage_block_page(cookieJar, 1, 0, &response);
+	// playlist_create(cookieJar, "Touhou Gameset", 1, NCM_PLAYLIST_NORMAL, &response);
+	// like(cookieJar, "22686719", 1, &response);
+	// homepage_block_page(cookieJar, 1, 0, &response);
+	// user_account(cookieJar, &response);
+	// user_binding(cookieJar,"6086142043", &response);
+	// simi_user(cookieJar, "691506", "50", "0", &response);
+	// recommend_resource(cookieJar, &response);
+	// recommend_songs(cookieJar, &response);
+	// history_recommend_songs_detail(cookieJar, 0, &response);
+	// vip_info(cookieJar, &response);
+	// record_recent_song(cookieJar, &response);
+	song_url_v1(cookieJar, "691506", "jymaster", &response);
 	printf("Response5:\n%s\n", response);
 	free(response);
 #endif
