@@ -27,6 +27,12 @@ int history_recommend_songs_detail(const char *cookieJar, const char *date, char
 int vip_info(const char *cookieJar, char **response);
 int record_recent_song(const char *cookieJar, char **response);
 int song_url_v1(const char *cookieJar, const char *ids, const char *level, char **response);
+int song_detail(const char *cookieJar, const char *ids, char **response);
+int cloud_search(const char *cookieJar, const char *keywords, int type, int limit, int offset, char **response);
+int song_wiki_summary(const char *cookieJar, const char *id, char **response);
+int sheet_list(const char *cookieJar, const char *id, char **response);
+int sheet_preview(const char *cookieJar, const char *id, char **response);
+int lyric_new(const char *cookieJar, const char *id, char **response);
 #ifdef __cplusplus
 }
 #endif

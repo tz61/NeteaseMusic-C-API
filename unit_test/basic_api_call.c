@@ -113,8 +113,21 @@ int main(void) {
 	// history_recommend_songs_detail(cookieJar, 0, &response);
 	// vip_info(cookieJar, &response);
 	// record_recent_song(cookieJar, &response);
-	song_url_v1(cookieJar, "691506", "jymaster", &response);
-	printf("Response5:\n%s\n", response);
+	// song_url_v1(cookieJar, "499793162", "jymaster", &response);
+	// song_detail(cookieJar, "691506", &response);
+	// cloud_search(cookieJar, " 東方", 1, 10, 0, &response);
+	// song_wiki_summary(cookieJar, "691506", &response);
+	// sheet_list(cookieJar, "480235092", &response);
+
+	// printf("Response1:\n%s\n", response);
+	// free(response);
+	// sheet_preview(cookieJar, "185561", &response);
+	lyric_new(cookieJar, "480235092", &response);
+	printf("lyric:\n%s\n", response);
+	free(response);
+
+	song_url_v1(cookieJar, "480235092", "jymaster", &response);
+	printf("resource:\n%s\n", response);
 	free(response);
 #endif
 	curl_global_cleanup();

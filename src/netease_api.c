@@ -286,6 +286,7 @@ int record_recent_song(const char *cookieJar, char **response) {
 	cJSON_Delete(jsonObject);
 	return code;
 }
+// standard, exhigh, lossless, hires, jyeffect(高清环绕声), sky(沉浸环绕声), jymaster(超清母带)
 int song_url_v1(const char *cookieJar, const char *ids, const char *level, char **response) {
 
 	cJSON *jsonObject = cJSON_CreateObject();
@@ -303,5 +304,82 @@ int song_url_v1(const char *cookieJar, const char *ids, const char *level, char 
 						   "/api/song/enhance/player/url/v1", response, NCM_EAPI);
 	cJSON_Delete(jsonObject);
 	cJSON_Delete(customCookie);
+	return code;
+}
+int song_detail(const char *cookieJar, const char *ids, char **response) {
+
+	cJSON *jsonObject = cJSON_CreateObject();
+	char realIDs[128] = {0};
+	sprintf_s(realIDs, 128, "[{\"id\":%s}]", ids);
+	cJSON_AddStringToObject(jsonObject, "c", realIDs);
+	int code = NCM_request(cookieJar, jsonObject, 0, "https://music.163.com/weapi/v3/song/detail", 0, response, NCM_WEAPI);
+	cJSON_Delete(jsonObject);
+	return code;
+}
+int cloud_search(const char *cookieJar, const char *keywords, int type, int limit, int offset, char **response) {
+
+	cJSON *jsonObject = cJSON_CreateObject();
+	cJSON_AddStringToObject(jsonObject, "s", keywords);
+	cJSON_AddNumberToObject(jsonObject, "type", type);
+	cJSON_AddNumberToObject(jsonObject, "limit", limit);
+	cJSON_AddNumberToObject(jsonObject, "offset", offset);
+	cJSON_AddBoolToObject(jsonObject, "total", 1);
+	int code = NCM_request(cookieJar, jsonObject, 0, "https://interface.music.163.com/eapi/cloudsearch/pc", "/api/cloudsearch/pc",
+						   response, NCM_EAPI);
+	cJSON_Delete(jsonObject);
+	return code;
+}
+int song_wiki_summary(const char *cookieJar, const char *id, char **response) {
+
+	cJSON *jsonObject = cJSON_CreateObject();
+	cJSON_AddStringToObject(jsonObject, "songId", id);
+	int code = NCM_request(cookieJar, jsonObject, 0, "https://interface3.music.163.com/eapi/music/wiki/home/song/get",
+						   "/api/song/play/about/block/page", response, NCM_EAPI);
+	cJSON_Delete(jsonObject);
+	return code;
+}
+int sheet_list(const char *cookieJar, const char *id, char **response) {
+
+	cJSON *jsonObject = cJSON_CreateObject();
+	cJSON_AddStringToObject(jsonObject, "id", id);
+	cJSON_AddStringToObject(jsonObject, "abTest", "b");
+	int code = NCM_request(cookieJar, jsonObject, 0, "https://interface3.music.163.com/eapi/music/sheet/list/v1",
+						   "/api/music/sheet/list/v1", response, NCM_EAPI);
+	cJSON_Delete(jsonObject);
+	return code;
+}
+int sheet_preview(const char *cookieJar, const char *id, char **response) {
+
+	cJSON *jsonObject = cJSON_CreateObject();
+
+	char realURL[128];
+	memset(realURL, 0, 128);
+	strcat_s(realURL, 128, "https://interface3.music.163.com/eapi//music/sheet/preview/info?id=");
+	if (strlen(id) > 127 - 67) {
+		printf("[user_followeds]uid too long");
+		return -1;
+	}
+	strcat_s(realURL, 128, id);
+	cJSON_AddStringToObject(jsonObject, "id", id);
+	int code = NCM_request(cookieJar, jsonObject, 0, realURL, "/api//music/sheet/preview/info", response, NCM_EAPI);
+	cJSON_Delete(jsonObject);
+	return code;
+}
+int lyric_new(const char *cookieJar, const char *id, char **response) {
+
+	cJSON *jsonObject = cJSON_CreateObject();
+
+	cJSON_AddStringToObject(jsonObject, "id", id);
+	cJSON_AddBoolToObject(jsonObject, "cp", 0);
+	cJSON_AddNumberToObject(jsonObject, "tv", 0);
+	cJSON_AddNumberToObject(jsonObject, "lv", 0);
+	cJSON_AddNumberToObject(jsonObject, "rv", 0);
+	cJSON_AddNumberToObject(jsonObject, "kv", 0);
+	cJSON_AddNumberToObject(jsonObject, "yv", 0);
+	cJSON_AddNumberToObject(jsonObject, "ytv", 0);
+	cJSON_AddNumberToObject(jsonObject, "yrv", 0);
+	int code = NCM_request(cookieJar, jsonObject, 0, "https://interface3.music.163.com/eapi/song/lyric/v1", "/api/song/lyric/v1",
+						   response, NCM_EAPI);
+	cJSON_Delete(jsonObject);
 	return code;
 }
