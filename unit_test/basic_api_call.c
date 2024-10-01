@@ -122,11 +122,11 @@ int main(void) {
 	// printf("Response1:\n%s\n", response);
 	// free(response);
 	// sheet_preview(cookieJar, "185561", &response);
-	lyric_new(cookieJar, "480235092", &response);
+	lyric_new(cookieJar, "28178006", &response);
 	printf("lyric:\n%s\n", response);
 	free(response);
 
-	song_url_v1(cookieJar, "480235092", "jymaster", &response);
+	song_url_v1(cookieJar, "28178006", "jymaster", &response);
 	printf("resource:\n%s\n", response);
 	free(response);
 #endif
